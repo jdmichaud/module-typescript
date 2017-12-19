@@ -1,2 +1,2 @@
-import { Foo, foo } from 'file1';
-import 'file2';
+export * from 'scripts/file1';
+export { Animal } from 'scripts/file2';

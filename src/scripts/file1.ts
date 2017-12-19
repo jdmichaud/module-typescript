@@ -3,7 +3,9 @@ export class Foo {
 }
 
 export function foo(): Foo {
-   return new Foo(bar());
+  return new Foo(bar());
 }
 
-function bar(): number { return 42; }
+function bar(): number {
+  return 42;
+}
