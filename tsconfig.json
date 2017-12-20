@@ -5,6 +5,7 @@
     "importHelpers": true,
     "strict": true,
     "noEmitHelpers": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declaration": true
   }
 }

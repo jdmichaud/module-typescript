@@ -18,6 +18,7 @@ module.exports = {
   output: {
     path: path.join(process.cwd(), 'dist'),
     filename: 'scripts/[name].[hash].js',
+    libraryTarget: "umd",
   },
 
   module: {
