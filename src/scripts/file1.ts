@@ -97,7 +97,7 @@ function checkType(argument: any, parameterTypes: any,
 function checkPrimitiveType(argument: any, parameterTypes: any,
                             parameterIndex: number, isOptional: boolean): boolean {
   if (parameterTypes[parameterIndex] === Number) {
-    if (typeof(argument) !== 'number') {
+    if (typeof(argument) !== 'number' && isFinite(value)) {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
         `but is of type ${toTypename(argument)}`
@@ -105,7 +105,7 @@ function checkPrimitiveType(argument: any, parameterTypes: any,
     }
     return true;
   }
-  if (parameterTypes[parameterIndex] === String) {
+  if (parameterTypes[parameterIndex] === String || value instanceof String) {
     if (typeof(argument) !== 'string') {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
