@@ -1,4 +1,4 @@
-import { optional, validate } from './file1';
+import {null2undefined, optional, validate} from './file1';
 
 export class Bar {
   public greet() { console.log('Hello I\'am bar'); }
@@ -10,7 +10,7 @@ export class Animal {
 
 export class Foo {
   @validate
-  public test(bar: Bar, @optional animal?: Animal) {
+  public test(bar: Bar, @optional @null2undefined animal?: Animal) {
     bar.greet();
     if (animal !== undefined) {
       animal.greet();

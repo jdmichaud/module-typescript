@@ -30,11 +30,12 @@ export function validate<T>(target: any, methodName: string,
         console.log('methodName:', methodName);
         const isOptional = Reflect.getOwnMetadata(optionalKey, target, methodName);
         const isUndefinable = Reflect.getOwnMetadata(null2undefinedKey, target, methodName);
-
+        // Check parameter types
         if (!(arguments[i] instanceof parameterTypes[i]) &&
             ((arguments[i] !== undefined) && (arguments[i] !== null)) || !isOptional) {
           throw new TypeError("Invalid types!");
         }
+        // If a parameter is null, set it to undefined
         if (isUndefinable && arguments[i] === null) {
           arguments[i] = undefined;
         }
