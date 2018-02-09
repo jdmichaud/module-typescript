@@ -27,11 +27,11 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
       },
-      {
-        enforce: 'pre',
-        test: /\.ts$/,
-        loader: 'tslint-loader',
-      },
+      // {
+      //   enforce: 'pre',
+      //   test: /\.ts$/,
+      //   loader: 'tslint-loader',
+      // },
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
