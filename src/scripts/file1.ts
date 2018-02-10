@@ -2,6 +2,17 @@ import "reflect-metadata";
 
 const OPTIONAL_SYMBOL = '__metadata_optional__';
 const NULL_TO_UNDEFINED_SYMBOL = '__metadata_null2undefined__';
+const NOT_EMPTY = '__metadata_notempty__';
+
+function addParameterTagToMetadata(target: Object, propertyKey: string | symbol,
+                                   parameterIndex: number, decoratorKey: symbol | string) {
+  let decoratorArray = Reflect.getOwnMetadata(decoratorKey, target, propertyKey);
+  if (decoratorArray === undefined) {
+    decoratorArray = [];
+  }
+  decoratorArray.push(parameterIndex);
+  Reflect.defineMetadata(decoratorKey, decoratorArray, target, propertyKey);
+}
 
 /**
  * Flags a parameter as potentially undefined. It shall be prepended to a
@@ -17,12 +28,7 @@ const NULL_TO_UNDEFINED_SYMBOL = '__metadata_null2undefined__';
  */
 export function optional(target: Object, propertyKey: string | symbol,
                          parameterIndex: number) {
-  let optionalArray = Reflect.getOwnMetadata(OPTIONAL_SYMBOL, target, propertyKey);
-  if (optionalArray === undefined) {
-    optionalArray = [];
-  }
-  optionalArray.push(parameterIndex);
-  Reflect.defineMetadata(OPTIONAL_SYMBOL, optionalArray, target, propertyKey);
+  addParameterTagToMetadata(target, propertyKey, parameterIndex, OPTIONAL_SYMBOL);
 }
 
 /**
@@ -44,12 +50,7 @@ export function optional(target: Object, propertyKey: string | symbol,
  */
 export function null2undefined(target: Object, propertyKey: string | symbol,
                          parameterIndex: number) {
-  let null2undefinedArray = Reflect.getOwnMetadata(NULL_TO_UNDEFINED_SYMBOL, target, propertyKey);
-  if (null2undefinedArray === undefined) {
-    null2undefinedArray = [];
-  }
-  null2undefinedArray.push(parameterIndex);
-  Reflect.defineMetadata(NULL_TO_UNDEFINED_SYMBOL, null2undefinedArray, target, propertyKey);
+  addParameterTagToMetadata(target, propertyKey, parameterIndex, NULL_TO_UNDEFINED_SYMBOL);
 }
 
 /**
@@ -97,7 +98,7 @@ function checkType(argument: any, parameterTypes: any,
 function checkPrimitiveType(argument: any, parameterTypes: any,
                             parameterIndex: number, isOptional: boolean): boolean {
   if (parameterTypes[parameterIndex] === Number) {
-    if (typeof(argument) !== 'number' && isFinite(value)) {
+    if (typeof(argument) !== 'number' && isFinite(argument)) {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
         `but is of type ${toTypename(argument)}`
@@ -105,7 +106,7 @@ function checkPrimitiveType(argument: any, parameterTypes: any,
     }
     return true;
   }
-  if (parameterTypes[parameterIndex] === String || value instanceof String) {
+  if (parameterTypes[parameterIndex] === String || argument instanceof String) {
     if (typeof(argument) !== 'string') {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
