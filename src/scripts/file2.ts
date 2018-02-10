@@ -23,16 +23,6 @@ export class Foo {
   }
 
   @validate
-  public testAny(arg: any) {
-    console.log(arg)
-  }
-
-  @validate
-  public testOptionalAny(arg1: string, @optional arg2?: any) {
-    console.log(arg1)
-  }
-
-  @validate
   public testArray(arg: string[]) {
     console.log(arg)
   }

@@ -178,6 +178,7 @@ function checkPrimitiveType(argument: any, parameterTypes: any,
 function checkNonPrimitiveType(argument: any, parameterTypes: any,
                    parameterIndex: number, isOptional: boolean): void {
   console.log('checkNonPrimitiveType');
+  console.log(parameterTypes[parameterIndex]);
   if (!(argument instanceof parameterTypes[parameterIndex]) &&
       (((argument !== undefined) && (argument !== null)) || !isOptional)) {
     throw new TypeError(
