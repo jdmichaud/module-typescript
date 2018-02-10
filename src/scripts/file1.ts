@@ -54,6 +54,46 @@ export function null2undefined(target: Object, propertyKey: string | symbol,
 }
 
 /**
+ * Flags a parameter that should not be empty. An array shall have at least one
+ * element and a string at least one character.
+ *
+ * example:
+ * ```
+ * @validate
+ * foo(@notempty notEmptyParameter?: int[]) {
+ *   console.log(notEmptyParameter);
+ * }
+ *
+ * foo([]);
+ * > Error
+ *
+ * @validate
+ * bar(@notempty notEmptyParameter?: string) {
+ *   console.log(notEmptyParameter);
+ * }
+ *
+ * bar('');
+ * > Error
+ * ```
+ *
+ * This decorator only works if coupled with the @validate decorator.
+ */
+export function notempty(target: Object, propertyKey: string | symbol,
+                         parameterIndex: number) {
+  addParameterTagToMetadata(target, propertyKey, parameterIndex, NOT_EMPTY);
+}
+
+
+function notemptyCheck(argument: any[] | string, parameterIndex: number) {
+  if (isString(argument) && argument === '') {
+    throw Error(`parameter ${parameterIndex + 1} shall be a non empty string`);
+  }
+  if (Array.isArray(argument) && argument.length === 0) {
+    throw Error(`parameter ${parameterIndex + 1} shall be a non empty array`);
+  }
+}
+
+/**
  * Returns true if the parameter is marked with the key symbol. False otherwise.
  */
 function retrieveMetadataMapping(key: string | symbol, target: Object,
@@ -88,6 +128,14 @@ function toTypename(value: any) {
   return "unknown type";
 }
 
+function isNumber(value: any) {
+  return typeof(value) === 'number' && isFinite(value);
+}
+
+function isString(value: any) {
+  return typeof(value) === 'string' || value instanceof String;
+}
+
 function checkType(argument: any, parameterTypes: any,
                    parameterIndex: number, isOptional: boolean) {
   if (!checkPrimitiveType(argument, parameterTypes, parameterIndex, isOptional)) {
@@ -98,7 +146,7 @@ function checkType(argument: any, parameterTypes: any,
 function checkPrimitiveType(argument: any, parameterTypes: any,
                             parameterIndex: number, isOptional: boolean): boolean {
   if (parameterTypes[parameterIndex] === Number) {
-    if (typeof(argument) !== 'number' && isFinite(argument)) {
+    if (!isNumber(argument)) {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
         `but is of type ${toTypename(argument)}`
@@ -106,8 +154,8 @@ function checkPrimitiveType(argument: any, parameterTypes: any,
     }
     return true;
   }
-  if (parameterTypes[parameterIndex] === String || argument instanceof String) {
-    if (typeof(argument) !== 'string') {
+  if (parameterTypes[parameterIndex] === String) {
+    if (!isString(argument)) {
       throw new TypeError(
         `parameter ${parameterIndex + 1} shall be of type Number ` +
         `but is of type ${toTypename(argument)}`
@@ -156,12 +204,16 @@ export function validate<T>(target: any, methodName: string,
       for (let i = 0; i < parameterTypes.length; ++i) {
         const isOptional = retrieveMetadataMapping(OPTIONAL_SYMBOL, target, methodName, i);
         const isUndefinable = retrieveMetadataMapping(NULL_TO_UNDEFINED_SYMBOL, target, methodName, i);
+        const isNotEmpty = retrieveMetadataMapping(NOT_EMPTY, target, methodName, i);
         // Check parameter types
         console.log(arguments[i]);
         checkType(arguments[i], parameterTypes, i, isOptional);
         // If a parameter is null, set it to undefined
         if (isUndefinable && arguments[i] === null) {
           arguments[i] = undefined;
+        }
+        if (isNotEmpty) {
+          notemptyCheck(arguments[i], i);
         }
       }
       return originalFunction.apply(this, arguments);

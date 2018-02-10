@@ -1,4 +1,4 @@
-import {null2undefined, optional, validate} from './file1';
+import { notempty, null2undefined, optional, validate } from './file1';
 
 export class Bar {
   public greet() { console.log('Hello I\'am bar'); }
@@ -36,6 +36,11 @@ export class Foo {
   public testArray(arg: string[]) {
     console.log(arg)
   }
+
+  @validate
+  public testNonEmptyArray(@notempty arg: string[]) {
+    console.log(arg)
+  }
 }
 
 /*
@@ -50,6 +55,7 @@ foo.test(bar, null);
 foo.testNumber(2);
 foo.testArray([1, 2, 3]);
 foo.testArray(['1', '2', '3']);
+foo.testNonEmptyArray([1]);
 // Should fail
 foo.test();
 foo.test(bar, bar);
@@ -59,4 +65,5 @@ foo.test(animal);
 foo.testNumber('2');
 foo.testArray(42);
 foo.testArray({});
+foo.testNonEmptyArray([]);
 */
